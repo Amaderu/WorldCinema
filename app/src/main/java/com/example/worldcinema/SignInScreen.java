@@ -27,7 +27,7 @@ public class SignInScreen extends AppCompatActivity {
         edtPassword = findViewById(R.id.edt_passwd);
 
         edtEmail.setText("name@domenname.ru");
-        edtPassword.setText("toor");
+        edtPassword.setText("toortoor");
     }
 
 

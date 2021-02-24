@@ -4,11 +4,19 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import com.google.gson.Gson;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class SignUpScreen extends AppCompatActivity{
 
@@ -25,11 +33,12 @@ public class SignUpScreen extends AppCompatActivity{
         edtPassword = findViewById(R.id.edt_passwd);
         edtRepPassword = findViewById(R.id.edt_repet_passwd);
 
-        edtUserName.setText("name");
-        edtUserSurename.setText("surename");
-        edtEmail.setText("name@domenname.ru");
-        edtPassword.setText("toor");
-        edtRepPassword.setText("toor");
+        edtUserName.setText("Sergey");
+        edtUserSurename.setText("Mota");
+        //edtEmail.setText("name@domenname.ru");
+        edtEmail.setText(edtUserName.getText().toString()+"@domenname.ru");
+        edtPassword.setText("toortoor");
+        edtRepPassword.setText("toortoor");
     }
 
     @Override
@@ -131,8 +140,40 @@ public class SignUpScreen extends AppCompatActivity{
             return false;
         }
         else {
-            Toast.makeText(SignUpScreen.this, "Success registration", (int) 1).show();
+            createUser();
+            //Toast.makeText(SignUpScreen.this, "Success registration", (int) 1).show();
         }
         return true;
+    }
+    public  void createUser(){
+        User user = new User(edtEmail.getText().toString().trim(),
+                edtPassword.getText().toString().trim(),
+                edtUserName.getText().toString().trim(),
+                edtUserSurename.getText().toString().trim());
+        Gson gson = new Gson();
+        String JsonPesponse = gson.toJson(user);
+        Log.d("RegResponse",JsonPesponse);
+        Network.getInstance().getRest().createUser(user).enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                Log.d("RetrofitResponse ","\n"+call.isExecuted()+"\n"+call.request().url().url().toString());
+                if(response.code()==200||response.code()==201)
+                    Toast.makeText(SignUpScreen.this, "Успешная регистрация", (int) 1).show();
+                else if(response.code()==400)
+                    Toast.makeText(SignUpScreen.this, "Проблемы при регистрации", (int) 1).show();
+                else if(response.code()==404)
+                    Toast.makeText(SignUpScreen.this, "Проверьте соидинение с интернетом\n"+response.code(), (int) 1).show();
+                else
+                    Toast.makeText(SignUpScreen.this, "Что-то пошло не так\n"+response.code(), (int) 1).show();
+
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+                Toast.makeText(SignUpScreen.this, "An error occurred during networking", (int) 1).show();
+                t.printStackTrace();
+                t.getMessage();
+            }
+        });
     }
 }

@@ -2,17 +2,21 @@ package com.example.worldcinema;
 
 import android.app.Activity;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class Network {
     private static Network mInstance;
     private static Retrofit retrofit;
-    private static final String BASE_URL="https://petstore.swagger.io/v2/";//"https://jsonplaceholder.typicode.com/";
+    private static final String BASE_URL="http://cinema.areas.su/";
 
 
 
     private Network() {
+        Gson gson = new GsonBuilder().setLenient().create();
         //Log'ироване
         /*HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
         interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
@@ -22,7 +26,7 @@ public class Network {
 
         retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
     }
 
@@ -33,7 +37,7 @@ public class Network {
         return mInstance;
     }
 
-    public static Rest getApi(){
+    public static Rest getRest(){
         return retrofit.create(Rest.class);
     }
 
